@@ -6,7 +6,7 @@ import (
 	_ "net/http/pprof"
 	"runtime"
 
-	"github.com/corvad/flashns/dns"
+	"github.com/corvad/warpstrack/discovery/dns"
 )
 
 type staticProvider []dns.Record
