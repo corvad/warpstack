@@ -1,3 +1,3 @@
-module github.com/corvad/flashns
+module github.com/corvad/warpstack
 
 go 1.27.0
