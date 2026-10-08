@@ -1,0 +1,89 @@
+edition = "2024";
+
+package warpstack.v1;
+
+option go_package = "github.com/corvad/warpstack/proto/v1";
+
+message Job {
+    string id = 1;
+    uint64 generation = 2;
+    JobSpec spec = 3;
+}
+
+message JobSpec {
+    repeated Container containers = 1;
+    RestartPolicy restart_policy = 2;
+}
+
+enum RestartPolicy {
+    RESTART_POLICY_ALWAYS = 0;
+    RESTART_POLICY_ON_FAILURE = 1;
+    RESTART_POLICY_NEVER = 2;
+}
+
+message Container {
+    string name = 1;
+    string image = 2;
+    repeated string args = 3;
+    repeated Env env = 4;
+    repeated Port ports = 5;
+    repeated Mount mounts = 6;
+    Resources resources = 7;
+    HealthCheck health = 8;
+}
+
+message Env {
+    string name = 1;
+    oneof value {
+        string literal = 2;
+        string secret_ref = 3;
+    }
+}
+
+message Port {
+    string name = 1;
+    uint32 port = 2;
+    Protocol protocol = 3;
+}
+
+enum Protocol {
+    PROTOCOL_UNSPECIFIED = 0;
+    PROTOCOL_TCP = 1;
+    PROTOCOL_UDP = 2;
+}
+
+message Mount {
+    string source = 1;
+    string target = 2;
+    bool read_only = 3;
+}
+
+message Resources {
+    uint32 cpu_milli = 1;
+    uint64 mem_bytes = 2;
+}
+
+message HealthCheck {
+    oneof probe {
+        HTTPProbe http = 1;
+        TCPProbe tcp = 2;
+    }
+    uint32 interval_s = 3;
+    uint32 timeout_s = 4;
+    uint32 failure_threshold = 5;
+}
+
+message HTTPProbe {
+    string path = 1;
+    uint32 port = 2;
+}
+
+message TCPProbe {
+    uint32 port = 1;
+}
+
+message Placement {
+    string job_id = 1;
+    uint64 generation = 2;
+    repeated string nodes = 3;
+}

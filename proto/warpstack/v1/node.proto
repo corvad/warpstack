@@ -1,0 +1,18 @@
+edition = "2024";
+
+package warpstack.v1;
+
+option go_package = "github.com/corvad/warpstack/proto/v1";
+
+message Node {
+    string name = 1;
+    string region = 2;
+    map<string, string> labels = 3;
+    bool voter = 4;
+}
+
+message NodeStatus {
+    string node = 1;
+    string version = 2;
+
+}
