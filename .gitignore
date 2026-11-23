@@ -34,4 +34,5 @@ go.work.sum
 
 *.pb.go
 
+secrets.local
 bin/

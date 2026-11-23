@@ -1,0 +1,19 @@
+cluster {
+  asn: 401144
+  announce: "23.165.68.0/24"
+  announce: "2602:81e:e000::/48"
+  announce: "2602:81e:e001::/48"
+}
+services {
+  name: "dns"
+  addresses: "23.165.68.1"
+  addresses: "23.165.68.2"
+  addresses: "2602:81e:e000::1"
+  addresses: "2602:81e:e001::1"
+}
+providers {
+  name: "vultr"
+  bgp_password_secret: "vultr_bgp"
+  neighbors { address: "169.254.169.254" asn: 64515 multihop: 2 }
+  neighbors { address: "2001:19f0:ffff::1" asn: 64515 multihop: 2 }
+}

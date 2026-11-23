@@ -1,0 +1,20 @@
+$TTL 300
+@    IN SOA  ns1.as401144.net. hostmaster.as401144.net. 2026112301 3600 600 1209600 300
+@    IN NS   ns1.as401144.net.
+@    IN NS   ns2.as401144.net.
+ns1  IN A    23.165.68.1
+ns1  IN AAAA 2602:81e:e000::1
+ns2  IN A    23.165.68.2
+ns2  IN AAAA 2602:81e:e001::1
+ewr  IN A    140.82.45.139
+mia  IN A    149.28.110.98
+dfw  IN A    104.238.146.141
+mex  IN A    64.177.90.18
+gru  IN A    216.238.115.42
+fra  IN A    45.76.91.194
+waw  IN A    70.34.247.100
+jnb  IN A    139.84.250.204
+bom  IN A    65.20.73.188
+del  IN A    139.84.163.6
+sin  IN A    139.180.157.181
+syd  IN A    139.180.163.94

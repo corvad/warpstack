@@ -2,8 +2,11 @@ package bgpd
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
+	"time"
 
+	api "github.com/osrg/gobgp/v4/api"
 	"github.com/osrg/gobgp/v4/pkg/server"
 )
 
@@ -16,7 +19,17 @@ func Run(ctx context.Context, logger *slog.Logger, apiAddress string) error {
 		server.LoggerOption(logger, level),
 	)
 	go s.Serve()
-	<-ctx.Done()
-	s.Stop()
-	return nil
+	ticker := time.NewTicker(time.Second)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-ctx.Done():
+			s.Stop()
+			return nil
+		case <-ticker.C:
+			if _, err := s.GetBgp(ctx, &api.GetBgpRequest{}); err != nil && ctx.Err() == nil {
+				return fmt.Errorf("speaker is no longer serving: %w", err)
+			}
+		}
+	}
 }
