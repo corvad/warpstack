@@ -6,6 +6,8 @@ import (
 	"log/slog"
 	"net/netip"
 	"time"
+
+	"github.com/corvad/warpstack/internal/cortical/config"
 )
 
 type Speaker interface {
@@ -15,7 +17,7 @@ type Speaker interface {
 	SetPolicy(ctx context.Context, allowed []netip.Prefix) error
 	AddPeer(ctx context.Context, p Peer) error
 	DeletePeer(ctx context.Context, address netip.Addr) error
-	AddPath(ctx context.Context, p netip.Prefix) error
+	AddPath(ctx context.Context, p netip.Prefix, c config.Communities) error
 	DeletePath(ctx context.Context, p netip.Prefix) error
 }
 
@@ -92,7 +94,7 @@ func (n *Netd) apply(ctx context.Context, d Desired, a Action) error {
 	case ActionDeletePath:
 		return n.speaker.DeletePath(ctx, a.Prefix)
 	case ActionAddPath:
-		return n.speaker.AddPath(ctx, a.Prefix)
+		return n.speaker.AddPath(ctx, a.Prefix, d.Communities)
 	}
 	return fmt.Errorf("unknown action kind %d", a.Kind)
 }

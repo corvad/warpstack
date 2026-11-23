@@ -226,7 +226,7 @@ func (g *GoBGP) Observe(ctx context.Context, allowed []netip.Prefix) (Observed, 
 	if o.Peers, err = g.Peers(ctx); err != nil {
 		return Observed{}, err
 	}
-	if o.Paths, err = g.Paths(ctx); err != nil {
+	if o.Paths, o.Tags, err = g.PathTags(ctx); err != nil {
 		return Observed{}, err
 	}
 	return o, nil

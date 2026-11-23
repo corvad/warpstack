@@ -60,6 +60,11 @@ func FromCluster(c *warpstackv1.ClusterConfig, provider string, d Discovered) (*
 	n.SetServices(c.GetServices())
 	n.SetBgpPasswordSecret(p.GetBgpPasswordSecret())
 	n.SetNeighbors(p.GetNeighbors())
+	for _, site := range c.GetSites() {
+		if site.GetName() == name {
+			n.SetCommunities(site.GetCommunities())
+		}
+	}
 	return n, nil
 }
 

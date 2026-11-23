@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/corvad/warpstack/internal/cortical/bgpd"
+	"github.com/corvad/warpstack/internal/cortical/config"
 )
 
 func startSpeaker(t *testing.T, addr string) *GoBGP {
@@ -105,10 +106,6 @@ func TestSpeakerGlobalAndPeers(t *testing.T) {
 	if len(got) != 1 || got[0].Address != want[1].Address {
 		t.Errorf("after delete: %+v, want only %s", got, want[1].Address)
 	}
-
-	if err := g.Stop(ctx); err != nil {
-		t.Fatalf("Stop: %v", err)
-	}
 }
 
 func TestSpeakerPolicyAndPaths(t *testing.T) {
@@ -154,7 +151,7 @@ func TestSpeakerPolicyAndPaths(t *testing.T) {
 	}
 
 	for _, p := range allowed {
-		if err := g.AddPath(ctx, p); err != nil {
+		if err := g.AddPath(ctx, p, config.Communities{}); err != nil {
 			t.Fatalf("AddPath: %v", err)
 		}
 	}

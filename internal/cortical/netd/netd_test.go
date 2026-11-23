@@ -7,6 +7,8 @@ import (
 	"os"
 	"testing"
 	"time"
+
+	"github.com/corvad/warpstack/internal/cortical/config"
 )
 
 func TestSyncConverges(t *testing.T) {
@@ -38,6 +40,15 @@ func TestSyncConverges(t *testing.T) {
 
 	check("first sync")
 	check("second sync")
+
+	c, err := config.ParseCommunities([]string{"64600:4637"})
+	if err != nil {
+		t.Fatalf("ParseCommunities: %v", err)
+	}
+	d.Communities = c
+	check("after adding communities")
+	d.Communities = config.Communities{}
+	check("after removing communities")
 
 	d.Paths = nil
 	check("after withdraw")

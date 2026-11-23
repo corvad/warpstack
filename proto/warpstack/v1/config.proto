@@ -8,6 +8,7 @@ message ClusterConfig {
     Cluster cluster = 1;
     repeated Service services = 2;
     repeated Provider providers = 3;
+    repeated Site sites = 4;
 }
 
 message Cluster {
@@ -32,6 +33,11 @@ message Neighbor {
     uint32 multihop = 3;
 }
 
+message Site {
+    string name = 1;
+    repeated string communities = 2;
+}
+
 message NodeConfig {
     string name = 1;
     string provider = 2;
@@ -42,4 +48,5 @@ message NodeConfig {
     repeated Service services = 7;
     string bgp_password_secret = 8;
     repeated Neighbor neighbors = 9;
+    repeated string communities = 10;
 }

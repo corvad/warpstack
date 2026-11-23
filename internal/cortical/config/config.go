@@ -35,7 +35,10 @@ func Validate(c *warpstackv1.ClusterConfig) error {
 	if err := validateServices(c.GetServices(), prefixes); err != nil {
 		return err
 	}
-	return validateProviders(c.GetProviders())
+	if err := validateProviders(c.GetProviders()); err != nil {
+		return err
+	}
+	return validateSites(c.GetSites())
 }
 
 func validateCluster(c *warpstackv1.Cluster) ([]netip.Prefix, error) {
@@ -64,6 +67,7 @@ func validateCluster(c *warpstackv1.Cluster) ([]netip.Prefix, error) {
 	}
 	return prefixes, nil
 }
+
 func validateServices(services []*warpstackv1.Service, prefixes []netip.Prefix) error {
 	names := make(map[string]bool, len(services))
 	used := make(map[netip.Addr]string)
@@ -104,6 +108,7 @@ func containsAddr(prefixes []netip.Prefix, addr netip.Addr) bool {
 	}
 	return false
 }
+
 func validateProviders(providers []*warpstackv1.Provider) error {
 	if len(providers) == 0 {
 		return errors.New("no providers defined")
@@ -137,6 +142,24 @@ func validateProviders(providers []*warpstackv1.Provider) error {
 			if n.GetMultihop() > 255 {
 				return fmt.Errorf("provider %q: neighbor %q: multihop %d exceeds 255", name, n.GetAddress(), n.GetMultihop())
 			}
+		}
+	}
+	return nil
+}
+
+func validateSites(sites []*warpstackv1.Site) error {
+	names := make(map[string]bool, len(sites))
+	for _, s := range sites {
+		name := s.GetName()
+		if name == "" {
+			return errors.New("site: name is missing")
+		}
+		if names[name] {
+			return fmt.Errorf("site %q: duplicate name", name)
+		}
+		names[name] = true
+		if _, err := ParseCommunities(s.GetCommunities()); err != nil {
+			return fmt.Errorf("site %q: %w", name, err)
 		}
 	}
 	return nil

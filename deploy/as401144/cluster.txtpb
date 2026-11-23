@@ -17,3 +17,7 @@ providers {
   neighbors { address: "169.254.169.254" asn: 64515 multihop: 2 }
   neighbors { address: "2001:19f0:ffff::1" asn: 64515 multihop: 2 }
 }
+sites { name: "bom" communities: "64600:4637" }
+sites { name: "del" communities: "64600:4637" communities: "64600:6453" }
+sites { name: "mex" communities: "64600:3356" communities: "64600:3549" }
+sites { name: "dfw" communities: "64600:3257" }

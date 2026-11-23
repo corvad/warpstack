@@ -96,8 +96,9 @@ func Reconcile(d Desired, o Observed) []Action {
 			actions = append(actions, Action{Kind: ActionDeletePath, Prefix: p})
 		}
 	}
+	tag := d.Communities.Key()
 	for _, p := range sortedPrefixes(d.Paths) {
-		if !havePaths[p] {
+		if !havePaths[p] || o.Tags[p] != tag {
 			actions = append(actions, Action{Kind: ActionAddPath, Prefix: p})
 		}
 	}

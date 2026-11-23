@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/netip"
 
+	"github.com/corvad/warpstack/internal/cortical/config"
 	warpstackv1 "github.com/corvad/warpstack/proto/warpstack/v1"
 )
 
@@ -16,11 +17,12 @@ type Peer struct {
 }
 
 type Desired struct {
-	ASN      uint32
-	RouterID netip.Addr
-	Allowed  []netip.Prefix
-	Peers    []Peer
-	Paths    []netip.Prefix
+	ASN         uint32
+	RouterID    netip.Addr
+	Allowed     []netip.Prefix
+	Peers       []Peer
+	Paths       []netip.Prefix
+	Communities config.Communities
 }
 
 type Observed struct {
@@ -30,6 +32,7 @@ type Observed struct {
 	PolicyOK bool
 	Peers    []Peer
 	Paths    []netip.Prefix
+	Tags     map[netip.Prefix]string
 }
 
 func Plan(n *warpstackv1.NodeConfig, password string, announce bool) (Desired, error) {
@@ -51,7 +54,11 @@ func Plan(n *warpstackv1.NodeConfig, password string, announce bool) (Desired, e
 	if n.GetBgpPasswordSecret() == "" {
 		password = ""
 	}
-	d := Desired{ASN: n.GetCluster().GetAsn(), RouterID: routerID}
+	communities, err := config.ParseCommunities(n.GetCommunities())
+	if err != nil {
+		return Desired{}, err
+	}
+	d := Desired{ASN: n.GetCluster().GetAsn(), RouterID: routerID, Communities: communities}
 	for _, s := range n.GetCluster().GetAnnounce() {
 		p, err := netip.ParsePrefix(s)
 		if err != nil {
