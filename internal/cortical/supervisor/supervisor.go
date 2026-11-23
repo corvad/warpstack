@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"runtime/debug"
 	"sync"
 	"time"
 )
@@ -83,39 +84,34 @@ func (s *Supervisor) Run(ctx context.Context) error {
 func run(ctx context.Context, subsystem Subsystem) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
-			err = fmt.Errorf("subsystem panic: %v", r)
+			err = fmt.Errorf("subsystem panic: %v\n%s", r, debug.Stack())
 		}
 	}()
 	return subsystem.Run(ctx)
 }
 
 func (s *Supervisor) supervise(ctx context.Context, spec Spec) {
+	name := spec.Subsystem.Name()
 	backoff := spec.Options.MinBackoff
 	for {
 		start := time.Now()
 		err := run(ctx, spec.Subsystem)
 		if ctx.Err() != nil {
-			log.Printf("[supervisor] subsystem %s quit gracefully", spec.Subsystem.Name())
+			log.Printf("[supervisor] subsystem %s quit gracefully", name)
 			return
 		}
 		if err == nil {
 			err = errors.New("subsystem exited unexpectedly")
 		}
-		if err != nil {
-			backoff = time.Duration(float64(backoff) * spec.Options.BackoffMultiplier)
-			if backoff > spec.Options.MaxBackoff {
-				backoff = spec.Options.MaxBackoff
-			}
-			if time.Since(start) > spec.Options.StableBackoff {
-				backoff = spec.Options.MinBackoff
-			}
-			log.Printf("[supervisor] subsystem %s failed: %v", spec.Subsystem.Name(), err)
-			log.Printf("[supervisor] subsystem %s will restart after backoff of %v", spec.Subsystem.Name(), backoff)
-			select {
-			case <-ctx.Done():
-				return
-			case <-time.After(backoff):
-			}
+		if time.Since(start) > spec.Options.StableBackoff {
+			backoff = spec.Options.MinBackoff
 		}
+		log.Printf("[supervisor] subsystem %s failed: %v", name, err)
+		select {
+		case <-ctx.Done():
+			return
+		case <-time.After(backoff):
+		}
+		backoff = min(time.Duration(float64(backoff)*spec.Options.BackoffMultiplier), spec.Options.MaxBackoff)
 	}
 }

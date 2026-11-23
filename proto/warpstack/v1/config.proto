@@ -1,0 +1,45 @@
+edition = "2024";
+
+package warpstack.v1;
+
+option go_package = "github.com/corvad/warpstack/proto/warpstack/v1;warpstackv1";
+
+message ClusterConfig {
+    Cluster cluster = 1;
+    repeated Service services = 2;
+    repeated Provider providers = 3;
+}
+
+message Cluster {
+    uint32 asn = 1;
+    repeated string announce = 2;
+}
+
+message Service {
+    string name = 1;
+    repeated string addresses = 2;
+}
+
+message Provider {
+    string name = 1;
+    string bgp_password_secret = 2;
+    repeated Neighbor neighbors = 3;
+}
+
+message Neighbor {
+    string address = 1;
+    uint32 asn = 2;
+    uint32 multihop = 3;
+}
+
+message NodeConfig {
+    string name = 1;
+    string provider = 2;
+    string router_id = 3;
+    string ipv4 = 4;
+    string ipv6 = 5;
+    Cluster cluster = 6;
+    repeated Service services = 7;
+    string bgp_password_secret = 8;
+    repeated Neighbor neighbors = 9;
+}

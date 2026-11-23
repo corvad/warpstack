@@ -2,7 +2,7 @@ edition = "2024";
 
 package warpstack.v1;
 
-option go_package = "github.com/corvad/warpstack/proto/v1";
+option go_package = "github.com/corvad/warpstack/proto/warpstack/v1;warpstackv1";
 
 message Node {
     string name = 1;
